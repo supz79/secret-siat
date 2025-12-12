@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html lang="it">
+<!DOCTYPE html><html lang="it">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>beta.4_fix_audio</title>
-
-  <style>
+  <title>beta.4_fix_audio</title>  <style>
     body {
       font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
       background: linear-gradient(180deg, #b3001e, #5c0a0f);
@@ -92,13 +89,19 @@
     #output {
       margin-top: 10px;
       min-height: 40px;
-      padding: 8px;
+      padding: 12px;
       border-radius: 8px;
       border: 1px solid rgba(255, 255, 255, 0.3);
       background: rgba(255, 255, 255, 0.18);
       box-sizing: border-box;
-      font-size: 1.1rem;
-      font-weight: 600;
+      font-size: 1.35rem; /* più grande per i nomi estratti */
+      font-weight: 800;
+      letter-spacing: 0.4px;
+    }
+
+    .arrow-red{
+      color:#b3001e;
+      font-weight:900;
     }
 
     /* 🎵 Pulsante audio sotto “Mostra Prossimo” */
@@ -151,10 +154,7 @@
       0% { transform: translateY(-10vh); opacity: 1; }
       100% { transform: translateY(110vh); opacity: 0.3; }
     }
-  </style>
-
-  <!-- PWA dynamic manifest -->
-  <script>
+  </style>  <!-- PWA dynamic manifest -->  <script>
     const manifest = {
       name: "Secret Siat",
       short_name: "Secret Siat",
@@ -194,40 +194,28 @@
         navigator.serviceWorker.register(swURL);
       });
     }
-  </script>
-</head>
+  </script></head>
 <body>
-  <h1>Secret Santa 🎄 Siat</h1>
-
-  <div class="card">
+  <h1>Secret Santa 🎄 Siat</h1>  <div class="card">
     <h2 style="margin:0 0 6px 0">Partecipanti</h2>
     <div id="listaPartecipanti"></div>
     <input id="nuovoPartecipante" placeholder="Nuovo partecipante" />
     <button id="btnAggiungiPartecipante">🎄 Aggiungi</button>
-  </div>
-
-  <div class="card">
+  </div>  <div class="card">
     <h2 style="margin:0 0 6px 0">Vincoli</h2>
     <div id="listaVincoli"></div>
     <input id="vincolo1" placeholder="Persona A (es: Anna)" />
     <input id="vincolo2" placeholder="NON può pescare B (es: Marco)" />
     <button id="btnAggiungiVincolo">🧦 Aggiungi Vincolo</button>
-  </div>
-
-  <div class="card">
+  </div>  <div class="card">
     <button id="btnGenera">🎁 Genera Estrazione Definitiva</button>
     <div id="output"></div>
     <button id="btnPdf" disabled>📄 Resoconto finale (PDF)</button>
     <button id="btnMostra" disabled>⭐ Mostra Prossimo (o premi Invio)</button>
     <button id="btnMusic" class="btn-music">🔇 Audio OFF</button>
-  </div>
-
-  <!-- Musica di sottofondo in loop -->
-  <audio id="bgmusic" preload="auto" loop playsinline>
+  </div>  <!-- Musica di sottofondo in loop -->  <audio id="bgmusic" preload="auto" loop playsinline>
     <source src="audio.mp3" type="audio/mpeg" />
-  </audio>
-
-  <script>
+  </audio>  <script>
     // Stato principale
     let partecipanti = [];
     let vincoli = [];
@@ -347,7 +335,7 @@
         }
 
         if (ok) {
-          accoppiamenti = copia.map((p, i) => `${p} → ${pescati[i]}`);
+          accoppiamenti = copia.map((p, i) => `${p} <span class="arrow-red">➜</span> ${pescati[i]}`);
           trovato = true;
           break;
         }
@@ -372,7 +360,7 @@
       }
 
       if (indiceCorrente < accoppiamenti.length) {
-        outputEl.textContent = accoppiamenti[indiceCorrente];
+        outputEl.innerHTML = accoppiamenti[indiceCorrente];
         indiceCorrente++;
       }
 
@@ -398,83 +386,106 @@
 
       const now = new Date().toLocaleString('it-IT');
       let html = `<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Resoconto Secret Santa</title>`;
-      html += `<style>body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial;margin:20px;background:#fafafa;color:#222;}h1{font-size:1.6rem;margin-bottom:0.2rem;}ul{margin-top:1rem;padding-left:1.2rem;}li{margin:0.2rem 0;font-size:1.05rem;}small{color:#666;}</style>`;
-      html += `</head><body>`;
-      html += `<h1>Resoconto Secret Santa 🎄</h1>`;
-      html += `<p><small>Generato il ${now}</small></p>`;
-      html += `<ul>`;
-      accoppiamenti.forEach((riga) => {
-        html += `<li>${riga}</li>`;
-      });
-      html += `</ul>`;
-      html += `<p><small>Consiglio: usa il comando Stampa del browser e scegli "Salva come PDF".</small></p>`;
-      html += `<script>window.onload = function(){ window.print(); };<\/script>`;
-      html += `</body></html>`;
+      html += `<style>body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial;margin:20px;background:#fafafa;color:#222;}h1{font-size:1.6rem;margin-bottom:0.2rem;}ul{margin-top:1rem;padding-left:1.2rem;}li{margin:0.2rem 0;font-size:1.05rem;}small{color:#666;}</style>`;html += `</head><body>`;
+  html += `<h1>Resoconto Secret Santa 🎄</h1>`;
+  html += `<p><small>Generato il ${now}</small></p>`;
+  html += `<ul>`;
+  accoppiamenti.forEach((riga) => {
+    html += `<li>${riga}</li>`;
+  });
+  html += `</ul>`;
+  html += `<p><small>Consiglio: usa il comando Stampa del browser e scegli "Salva come PDF".</small></p>`;
+  html += `<script>window.onload = function(){ window.print(); };<\/script>`;
+  html += `</body></html>`;
 
-      document.open();
-      document.write(html);
-      document.close();
+  document.open();
+  document.write(html);
+  document.close();
+}
+
+  if (indiceCorrente < accoppiamenti.length) {
+    outputEl.textContent = 'Completa prima la visualizzazione di tutti gli abbinamenti con "Mostra Prossimo".';
+    return;
+  }
+
+  const now = new Date().toLocaleString('it-IT');
+  let html = `<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Resoconto Secret Santa</title>`;
+  html += `<style>body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial;margin:20px;background:#fafafa;color:#222;}h1{font-size:1.6rem;margin-bottom:0.2rem;}ul{margin-top:1rem;padding-left:1.2rem;}li{margin:0.2rem 0;font-size:1.05rem;}small{color:#666;}</style>`;
+  html += `</head><body>`;
+  html += `<h1>Resoconto Secret Santa 🎄</h1>`;
+  html += `<p><small>Generato il ${now}</small></p>`;
+  html += `<ul>`;
+  accoppiamenti.forEach((riga) => {
+    html += `<li>${riga}</li>`;
+  });
+  html += `</ul>`;
+  html += `<p><small>Consiglio: usa il comando Stampa del browser e scegli "Salva come PDF".</small></p>`;
+  html += `<script>window.onload = function(){ window.print(); };<\/script>`;
+  html += `</body></html>`;
+
+  document.open();
+  document.write(html);
+  document.close();
+}
+
+btnPdf.addEventListener("click", scaricaResoconto);
+
+// Invio = Mostra Prossimo (se attivo)
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !btnMostra.disabled) {
+    e.preventDefault();
+    mostraProssimo();
+  }
+});
+
+// 🎵 Audio ON/OFF (Android: parte solo dopo un tap)
+let musicUnlocked = false;
+let musicOn = false;
+
+const updateMusicBtn = () => {
+  btnMusic.textContent = musicOn ? "🎄 Musica ON" : "🎄 Musica OFF";
+  btnMusic.classList.toggle("is-on", musicOn);
+};
+
+updateMusicBtn();
+
+// Tentativo autoplay (desktop). Se fallisce, resta OFF e l'utente attiva col bottone.
+window.addEventListener("load", () => {
+  if (!bgmusic) return;
+  bgmusic.volume = 0.8;
+  bgmusic.play().then(() => {
+    musicUnlocked = true;
+    musicOn = true;
+    updateMusicBtn();
+  }).catch(() => {
+    musicUnlocked = false;
+    musicOn = false;
+    updateMusicBtn();
+  });
+});
+
+btnMusic.addEventListener("click", async () => {
+  try {
+    // OFF = pausa (mantiene il punto corrente)
+    if (musicOn) {
+      bgmusic.pause();
+      musicOn = false;
+      updateMusicBtn();
+      return;
     }
 
-    btnPdf.addEventListener("click", scaricaResoconto);
-
-    // Invio = Mostra Prossimo (se attivo)
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && !btnMostra.disabled) {
-        e.preventDefault();
-        mostraProssimo();
-      }
-    });
-
-    // 🎵 Audio ON/OFF (Android: parte solo dopo un tap)
-    let musicUnlocked = false;
-    let musicOn = false;
-
-    const updateMusicBtn = () => {
-      btnMusic.textContent = musicOn ? "🎄 Musica ON" : "🎄 Musica OFF";
-      btnMusic.classList.toggle("is-on", musicOn);
-    };
-
+    // ON = play (riprende dallo stesso punto; NON tocchiamo currentTime)
+    await bgmusic.play();
+    musicUnlocked = true;
+    musicOn = true;
     updateMusicBtn();
+  } catch (e) {
+    console.warn("Audio toggle failed:", e);
+    btnMusic.textContent = "Tocca ancora 🔊";
+  }
+});
 
-    // Tentativo autoplay (desktop). Se fallisce, resta OFF e l'utente attiva col bottone.
-    window.addEventListener("load", () => {
-      if (!bgmusic) return;
-      bgmusic.volume = 0.8;
-      bgmusic.play().then(() => {
-        musicUnlocked = true;
-        musicOn = true;
-        updateMusicBtn();
-      }).catch(() => {
-        musicUnlocked = false;
-        musicOn = false;
-        updateMusicBtn();
-      });
-    });
-
-    btnMusic.addEventListener("click", async () => {
-      try {
-        // OFF = pausa (mantiene il punto corrente)
-        if (musicOn) {
-          bgmusic.pause();
-          musicOn = false;
-          updateMusicBtn();
-          return;
-        }
-
-        // ON = play (riprende dallo stesso punto; NON tocchiamo currentTime)
-        await bgmusic.play();
-        musicUnlocked = true;
-        musicOn = true;
-        updateMusicBtn();
-      } catch (e) {
-        console.warn("Audio toggle failed:", e);
-        btnMusic.textContent = "Tocca ancora 🔊";
-      }
-    });
-  </script>
-
-  <script>
+  </script>  <script>
     /* ❄️ Generatore di fiocchi di neve */
     function creaFiocco() {
       const fiocco = document.createElement("div");
@@ -491,6 +502,5 @@
     }
 
     setInterval(creaFiocco, 250);
-  </script>
-</body>
+  </script></body>
 </html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Secret Santa App</title>
+  <title>beta.4_fix_audio</title>
 
   <style>
     body {
@@ -88,43 +88,49 @@
       border: 1px solid rgba(255, 255, 255, 0.3);
       display: block;
     }
-    /* === RIMOZIONE PARTECIPANTE (X) === */
-    .item.partecipante {
+
+    
+    /* Partecipanti: layout con X di rimozione (solo per la lista partecipanti) */
+    .participant-item{
       position: relative;
-      padding-right: 38px; /* spazio per la X */
-      cursor: default;
-    }
-    .item.partecipante .remove-x {
-      .remove-x {
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    font-size: 14px;
-    font-weight: bold;
-    line-height: 1;
-
-    cursor: pointer;
-}
-
-    }
-    .item.partecipante .remove-x:hover {
-      opacity: 1;
-      background: rgba(255, 77, 109, 0.22);
-      border-color: rgba(255, 77, 109, 0.45);
+      padding-right: 44px; /* spazio per la X */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
 
+    .participant-item .remove-participant{
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
 
-    #output {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+
+      display: grid;
+      place-items: center;
+
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1;
+      font-family: inherit;
+
+      background: rgba(0,0,0,0.18);
+      border: 1px solid rgba(255,255,255,0.30);
+      color: #fff;
+
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .participant-item .remove-participant:hover{
+      background: rgba(179,0,30,0.25);
+      border-color: rgba(179,0,30,0.55);
+    }
+#output {
       margin-top: 10px;
       min-height: 40px;
       padding: 12px;
@@ -287,37 +293,51 @@
     const listaVincoliEl = document.getElementById('listaVincoli');
     const btnMostra = document.getElementById('btnMostra');
     const btnPdf = document.getElementById('btnPdf');
+
+
+    // Click sulla X per rimuovere un partecipante (event delegation)
+    listaPartecipantiEl.addEventListener('click', (e) => {
+      const x = e.target.closest('.remove-participant');
+      if (!x) return;
+      e.stopPropagation();
+
+      const nome = x.getAttribute('data-remove') || '';
+      rimuoviPartecipante(nome);
+    });
+
+    function rimuoviPartecipante(nome) {
+      const n = String(nome || '').trim();
+      if (!n) return;
+
+      // rimuovi partecipante (match esatto, fallback case-insensitive)
+      const before = partecipanti.length;
+      partecipanti = partecipanti.filter(p => p !== n);
+      if (partecipanti.length === before) {
+        partecipanti = partecipanti.filter(p => String(p).toLowerCase() !== n.toLowerCase());
+      }
+
+      // rimuovi vincoli che lo coinvolgono
+      vincoli = vincoli.filter(([a,b]) =>
+        String(a).toLowerCase() !== n.toLowerCase() &&
+        String(b).toLowerCase() !== n.toLowerCase()
+      );
+
+      // reset estrazione in corso (coerenza UI)
+      accoppiamenti = [];
+      indiceCorrente = 0;
+      outputEl.textContent = '';
+      btnMostra.disabled = true;
+      btnPdf.disabled = true;
+
+      // persistenza + refresh UI
+      salvaStato();
+      aggiornaListe();
+    }
     const btnMusic = document.getElementById('btnMusic');
     const outputEl = document.getElementById('output');
     const bgmusic = document.getElementById('bgmusic');
 
-    
-    // Click sulla X per rimuovere un partecipante (event delegation)
-    listaPartecipantiEl.addEventListener('click', (e) => {
-      const target = e.target;
-      if (target && target.classList && target.classList.contains('remove-x')) {
-        e.stopPropagation();
-        const nome = target.getAttribute('data-remove');
-        if (!nome) return;
-
-        // rimuovi partecipante
-        partecipanti = partecipanti.filter((p) => p !== nome);
-
-        // rimuovi anche vincoli che lo coinvolgono, per evitare incongruenze
-        vincoli = vincoli.filter(([a, b]) => a !== nome && b !== nome);
-
-        // reset estrazione corrente (se c'era)
-        accoppiamenti = [];
-        indiceCorrente = 0;
-        outputEl.textContent = '';
-        btnMostra.disabled = true;
-        btnPdf.disabled = true;
-
-        aggiornaListe();
-      }
-    });
-
-function escapeHtml(s) {
+    function escapeHtml(s) {
       return String(s)
         .replaceAll('&', '&amp;')
         .replaceAll('<', '&lt;')
@@ -341,7 +361,7 @@ function escapeHtml(s) {
       listaPartecipantiEl.innerHTML = partecipanti
         .map((p) => {
           const ic = iconaPerNome[p] || '👤';
-          return `<div class="item partecipante" data-nome="${escapeHtml(p)}">${ic} ${escapeHtml(p)}<span class="remove-x" data-remove="${escapeHtml(p)}" title="Rimuovi">×</span></div>`;
+          return `<div class="item participant-item">${ic} ${escapeHtml(p)}<span class="remove-participant" data-remove="${escapeHtml(p)}" title="Rimuovi">×</span></div>`;
         })
         .join('');
 

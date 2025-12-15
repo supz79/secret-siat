@@ -513,14 +513,30 @@ const manifest = {
         }
 
         let ok = true;
-        for (let i = 0; i < copia.length; i++) {
-          const giver = copia[i];
-          const receiver = pescati[i];
-          if (giver === receiver) { ok = false; break; }
-          if (vincoliFiltrati.some((v) => v[0] === giver && v[1] === receiver)) {
-            ok = false; break;
-          }
-        }
+     for (let i = 0; i < copia.length; i++) {
+  const giver = copia[i];
+  const receiver = pescati[i];
+
+  // ❌ niente auto-regalo
+  if (giver === receiver) {
+    ok = false;
+    break;
+  }
+
+  // ❌ vincoli manuali
+  if (vincoliFiltrati.some((v) => v[0] === giver && v[1] === receiver)) {
+    ok = false;
+    break;
+  }
+
+  // ❌ NO SCAMBIO RECIPROCO
+  const idxReceiver = copia.indexOf(receiver);
+  if (idxReceiver !== -1 && pescati[idxReceiver] === giver) {
+    ok = false;
+    break;
+  }
+}
+
 
         if (ok) {
           accoppiamenti = copia.map((giver, i) => ({ giver, receiver: pescati[i] }));

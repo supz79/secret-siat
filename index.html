@@ -231,8 +231,6 @@
       #printArea .brand-mark{
         width: 16mm;
         height: 16mm;
-        border-radius: 4mm;
-        background: #0b5fa5; /* brand */
       }
 
       #printArea h1{
@@ -345,8 +343,11 @@ const manifest = {
   <div id="printArea" style="display:none">
     <div class="print-wrap">
       <div class="print-header">
-        <div class="brand-mark" aria-hidden="true"></div>
-        <div>
+        <img
+  src="icon-512.png"
+  alt="Logo SIAT"
+  class="brand-mark"
+        />
           <h1>Siat Secret Santa - Resoconto finale</h1>
           <div class="meta" id="printMeta"></div>
         </div>

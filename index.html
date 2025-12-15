@@ -188,20 +188,20 @@
 
   <!-- PWA dynamic manifest -->
   <script>
-    const manifest = {
-      name: "Secret Siat",
-      short_name: "Secret Siat",
-      start_url: ".",
-      display: "standalone",
-      background_color: "#a40f18",
-      theme_color: "#a40f18",
-      icons: [
-        {
-          { src: "192x192_ico_siat.png", sizes: "192x192", type: "image/png" },
-          { src: "512x512_ico_siat.png", sizes: "512x512", type: "image/png" }
-        },
-      ],
-    };
+    const baseURL = new URL("./", location.href).href;
+
+const manifest = {
+  name: "Secret Siat",
+  short_name: "Secret Siat",
+  start_url: ".",
+  display: "standalone",
+  background_color: "#0b5fa5",
+  theme_color: "#0b5fa5",
+  icons: [
+    { src: new URL("icon-192.png", baseURL).href, sizes: "192x192", type: "image/png" },
+    { src: new URL("icon-512.png", baseURL).href, sizes: "512x512", type: "image/png" }
+  ]
+};
     const blob = new Blob([JSON.stringify(manifest)], { type: "application/json" });
     const manifestURL = URL.createObjectURL(blob);
     const link = document.createElement("link");

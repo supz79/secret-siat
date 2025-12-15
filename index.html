@@ -184,6 +184,95 @@
       0% { transform: translateY(-10vh); opacity: 1; }
       100% { transform: translateY(110vh); opacity: 0.3; }
     }
+    @media print {
+  /* Impostazioni pagina */
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+
+  /* Colori e resa */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  body {
+    background: white !important;
+    color: #111 !important;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    font-size: 11pt;
+    line-height: 1.35;
+  }
+
+  /* Nascondi tutto… */
+  body * {
+    visibility: hidden !important;
+  }
+
+  /* …tranne l’area di stampa */
+  #printArea, #printArea * {
+    visibility: visible !important;
+  }
+
+  /* Posiziona l’area di stampa in alto a sinistra */
+  #printArea {
+    position: fixed;
+    inset: 0;
+    padding: 0;
+  }
+
+  /* Header report */
+  #printArea .print-header {
+    display: flex;
+    align-items: center;
+    gap: 10mm;
+    margin-bottom: 6mm;
+    padding-bottom: 4mm;
+    border-bottom: 1px solid #ddd;
+  }
+
+  #printArea .brand-mark {
+    width: 16mm;
+    height: 16mm;
+    border-radius: 4mm;
+    background: #0b5fa5; /* blu brand, cambia se vuoi */
+  }
+
+  #printArea h1 {
+    font-size: 16pt;
+    margin: 0;
+  }
+
+  #printArea .meta {
+    color: #444;
+    font-size: 10pt;
+    margin-top: 1mm;
+  }
+
+  /* Tabella pulita */
+  #printArea table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 6mm;
+  }
+
+  #printArea th, #printArea td {
+    text-align: left;
+    padding: 3.2mm 2.5mm;
+    border-bottom: 1px solid #eee;
+    vertical-align: top;
+  }
+
+  #printArea th {
+    font-size: 10pt;
+    color: #333;
+    border-bottom: 1px solid #ddd;
+  }
+
+  /* Evita spezzature brutte */
+  #printArea tr { break-inside: avoid; }
+}
   </style>
 
   <!-- PWA dynamic manifest -->
@@ -258,6 +347,26 @@ const manifest = {
   <audio id="bgmusic" preload="auto" loop playsinline>
     <source src="audio.mp3" type="audio/mpeg" />
   </audio>
+
+  <div id="printArea" style="display:none">
+  <div class="print-header">
+    <div class="brand-mark"></div>
+    <div>
+      <h1>Siat Secret Santa - Resoconto finale</h1>
+      <div class="meta" id="printMeta"></div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:45%">Partecipante</th>
+        <th style="width:55%">Regala a</th>
+      </tr>
+    </thead>
+    <tbody id="printTableBody"></tbody>
+  </table>
+</div>
 
   <script>
     // Debug-friendly: se qualcosa va storto, mostriamo un messaggio invece di “non funziona nulla”.

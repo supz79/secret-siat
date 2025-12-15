@@ -644,6 +644,44 @@ const manifest = {
         btnMusic.textContent = 'Tocca ancora 🔊';
       }
     });
+    function preparaStampa() {
+  if (!accoppiamenti || accoppiamenti.length === 0) {
+    alert("Nessun sorteggio disponibile da stampare.");
+    return;
+  }
+
+  // Meta info (data / ora)
+  const now = new Date();
+  const meta = `Generato il ${now.toLocaleDateString()} alle ${now.toLocaleTimeString()}`;
+  document.getElementById("printMeta").textContent = meta;
+
+  // Corpo tabella
+  const tbody = document.getElementById("printTableBody");
+  tbody.innerHTML = "";
+
+  accoppiamenti.forEach(coppia => {
+    const tr = document.createElement("tr");
+
+    const tdGiver = document.createElement("td");
+    tdGiver.textContent = coppia.giver;
+
+    const tdReceiver = document.createElement("td");
+    tdReceiver.textContent = coppia.receiver;
+
+    tr.appendChild(tdGiver);
+    tr.appendChild(tdReceiver);
+    tbody.appendChild(tr);
+  });
+
+  // Mostra area di stampa (solo per il print)
+  const printArea = document.getElementById("printArea");
+  printArea.style.display = "block";
+
+  window.print();
+
+  // Nascondi di nuovo dopo la stampa
+  printArea.style.display = "none";
+}
   </script>
 
   <script>

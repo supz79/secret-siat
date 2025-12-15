@@ -333,6 +333,14 @@ const manifest = {
 
   <div class="card">
     <button id="btnGenera">🎁 Genera Estrazione Definitiva</button>
+    <label style="display:block; margin-top:10px; font-size:0.95rem;">
+  <input
+    type="checkbox"
+    id="toggleReciproci"
+    style="transform: scale(1.2); margin-right:6px;"
+  />
+  Consenti scambi reciproci (A ⇄ B)
+</label>
     <div id="output"></div>
     <button id="btnPdf" disabled>📄 Resoconto finale (PDF)</button>
     <button id="btnMostra" disabled>⭐ Mostra Prossimo (o premi Invio)</button>
@@ -534,6 +542,8 @@ const manifest = {
   if (idxReceiver !== -1 && pescati[idxReceiver] === giver) {
     ok = false;
     break;
+  const toggleReciproci = document.getElementById('toggleReciproci');
+
   }
 }
 

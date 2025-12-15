@@ -538,10 +538,19 @@ const manifest = {
   }
 
   // ❌ NO SCAMBIO RECIPROCO
+const consentiReciproci = toggleReciproci?.checked === true;
+
+if (!consentiReciproci) {
   const idxReceiver = copia.indexOf(receiver);
   if (idxReceiver !== -1 && pescati[idxReceiver] === giver) {
     ok = false;
     break;
+    if (partecipanti.length === 2 && !toggleReciproci?.checked) {
+  outputEl.textContent =
+    'Con 2 partecipanti è necessario consentire gli scambi reciproci.';
+  return;
+}
+
   const toggleReciproci = document.getElementById('toggleReciproci');
 
   }

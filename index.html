@@ -324,20 +324,20 @@ const manifest = {
   </div>
 
   <div class="card">
-    <h2 style="margin:0 0 6px 0">Vincoli</h2>
-    <div id="listaVincoli"></div>
-    <input id="vincolo1" placeholder="Persona A (es: Anna)" />
-    <input id="vincolo2" placeholder="NON può pescare B (es: Marco)" />
-    <button id="btnAggiungiVincolo">🧦 Aggiungi Vincolo</button>
-  </div>
+  <h2 style="margin:0 0 6px 0">Vincoli</h2>
+  <div id="listaVincoli"></div>
+  <input id="vincolo1" placeholder="Persona A (es: Anna)" />
+  <input id="vincolo2" placeholder="NON può pescare B (es: Marco)" />
+  <button id="btnAggiungiVincolo">🧦 Aggiungi Vincolo</button>
+
+  <!-- 🔁 Toggle scambi reciproci (parte dei vincoli) -->
+  <button id="btnReciproci">🔁 Scambi reciproci: OFF</button>
+</div>
 
   <div class="card">
     <button id="btnGenera">🎁 Genera Estrazione Definitiva</button>
 
-    <!-- 🔁 Toggle come TASTO VERDE (ON/OFF) -->
-    <button id="btnReciproci">🔁 Scambi reciproci: OFF</button>
-
-    <div id="output"></div>
+       <div id="output"></div>
     <button id="btnPdf" disabled>📄 Resoconto finale (PDF)</button>
     <button id="btnMostra" disabled>⭐ Mostra Prossimo (o premi Invio)</button>
     <button id="btnMusic" class="btn-music">🔇 Audio OFF</button>

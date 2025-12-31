@@ -51,6 +51,29 @@
       transition: transform 0.15s ease;
       display: block;
     }
+
+    button[disabled] {
+      opacity: 0.6;
+      cursor: not-allowed;
+      filter: grayscale(40%);
+    }
+
+    input {
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      border: none;
+      margin: 10px auto 0 auto;
+      font-size: 1.05rem;
+      background: rgba(255, 255, 255, 0.95);
+      color: #3b0d0d;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      display: block;
+    }
+
+    .item {
       background: rgba(255, 255, 255, 0.25);
       padding: 10px 40px 10px 10px; /* spazio a destra per la X */
       border-radius: 8px;
@@ -252,18 +275,18 @@
   <script>
     const baseURL = new URL("./", location.href).href;
 
-const manifest = {
-  name: "Secret Siat",
-  short_name: "Secret Siat",
-  start_url: ".",
-  display: "standalone",
-  background_color: "#0b5fa5",
-  theme_color: "#0b5fa5",
-  icons: [
-    { src: new URL("icon-192.png", baseURL).href, sizes: "192x192", type: "image/png" },
-    { src: new URL("icon-512.png", baseURL).href, sizes: "512x512", type: "image/png" }
-  ]
-};
+    const manifest = {
+      name: "Secret Siat",
+      short_name: "Secret Siat",
+      start_url: ".",
+      display: "standalone",
+      background_color: "#0b5fa5",
+      theme_color: "#0b5fa5",
+      icons: [
+        { src: new URL("icon-192.png", baseURL).href, sizes: "192x192", type: "image/png" },
+        { src: new URL("icon-512.png", baseURL).href, sizes: "512x512", type: "image/png" }
+      ]
+    };
     const blob = new Blob([JSON.stringify(manifest)], { type: "application/json" });
     const manifestURL = URL.createObjectURL(blob);
     const link = document.createElement("link");
@@ -301,41 +324,40 @@ const manifest = {
   </div>
 
   <div class="card">
-  <h2 style="margin:0 0 6px 0">Vincoli</h2>
-  <div id="listaVincoli"></div>
-  <input id="vincolo1" placeholder="Persona A (es: Anna)" />
-  <input id="vincolo2" placeholder="NON può pescare B (es: Marco)" />
-  <button id="btnAggiungiVincolo">🧦 Aggiungi Vincolo</button>
+    <h2 style="margin:0 0 6px 0">Vincoli</h2>
+    <div id="listaVincoli"></div>
+    <input id="vincolo1" placeholder="Persona A (es: Anna)" />
+    <input id="vincolo2" placeholder="NON può pescare B (es: Marco)" />
+    <button id="btnAggiungiVincolo">🧦 Aggiungi Vincolo</button>
 
-  <!-- 🔁 Toggle scambi reciproci (parte dei vincoli) -->
-  <button id="btnReciproci">🔁 Scambi reciproci: OFF</button>
-</div>
+    <!-- 🔁 Toggle scambi reciproci (parte dei vincoli) -->
+    <button id="btnReciproci">🔁 Scambi reciproci: OFF</button>
+  </div>
 
   <div class="card">
     <button id="btnGenera">🎁 Genera Estrazione Definitiva</button>
 
-     <div id="output"></div>
-<button id="btnMostra" disabled>⭐ Mostra Prossimo (o premi Invio)</button>
-<button id="btnPdf" disabled>📄 Resoconto finale (PDF)</button>
-    
+    <div id="output"></div>
+    <button id="btnMostra" disabled>⭐ Mostra Prossimo (o premi Invio)</button>
+    <button id="btnPdf" disabled>📄 Resoconto finale (PDF)</button>
   </div>
+
   <div class="card">
-  <h2 style="margin:0 0 6px 0">Musica</h2>
-  <button id="btnMusic" class="btn-music">🔇 Audio OFF</button>
-</div>
+    <h2 style="margin:0 0 6px 0">Musica</h2>
+    <button id="btnMusic" class="btn-music">🔇 Audio OFF</button>
+  </div>
 
   <!-- ========= AREA STAMPA (NUOVO) ========= -->
   <div id="printArea" style="display:none">
     <div class="print-wrap">
       <div class="print-header">
         <img
-  src="icon-512.png"
-  alt="Logo SIAT"
-  class="brand-mark"
+          src="icon-512.png"
+          alt="Logo SIAT"
+          class="brand-mark"
         />
-          <h1>Siat Secret Santa - Resoconto finale</h1>
-          <div class="meta" id="printMeta"></div>
-        </div>
+        <h1>Siat Secret Santa - Resoconto finale</h1>
+        <div class="meta" id="printMeta"></div>
       </div>
 
       <table>
@@ -432,6 +454,30 @@ const manifest = {
       aggiornaListe();
     });
 
+    // ✅ NUOVO: Rimozione vincolo con X (event delegation)
+    listaVincoliEl.addEventListener('click', (e) => {
+      const x = e.target.closest('.remove-x');
+      if (!x) return;
+      const item = e.target.closest('.item');
+      if (!item) return;
+
+      const vidx = Number(item.dataset.vidx);
+      if (!Number.isInteger(vidx)) return;
+
+      if (!vincoli[vidx]) return;
+
+      // Rimuovi vincolo
+      vincoli.splice(vidx, 1);
+
+      // Reset estrazione in corso (coerenza UI)
+      accoppiamenti = [];
+      indiceCorrente = 0;
+      btnMostra.disabled = true;
+      btnPdf.disabled = true;
+      outputEl.textContent = '';
+
+      aggiornaListe();
+    });
 
     function escapeHtml(s) {
       return String(s)
@@ -461,11 +507,12 @@ const manifest = {
         })
         .join('');
 
+      // ✅ MODIFICATO: aggiunta X e data-vidx per i vincoli
       listaVincoliEl.innerHTML = vincoli
-        .map(([a, b]) => {
+        .map(([a, b], i) => {
           const icA = iconaPerNome[a] || '👤';
           const icB = iconaPerNome[b] || '👤';
-          return `<div class="item">${icA} ${escapeHtml(a)} ❌ ${icB} ${escapeHtml(b)}</div>`;
+          return `<div class="item" data-vidx="${i}">${icA} ${escapeHtml(a)} ❌ ${icB} ${escapeHtml(b)}<span class="remove-x" title="Rimuovi">×</span></div>`;
         })
         .join('');
     }
